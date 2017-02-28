@@ -17,17 +17,40 @@ void loadStrings( std::string fileName, std::string strings[], int len )
     }
 }
 
+bool wasDrawn( int number, int arr[], int howMany )
+{
+    if( howMany <= 0 )
+        return false;
+    for( int i = 0; i < howMany; i++ )
+    {
+        if( arr[i] == number )
+            return true;
+    }
+}
+
 int main( int argc, char *argv[] )
 {
     srand( time( NULL ) );
     sf::RenderWindow window( sf::VideoMode(500, 500), "Bingo Generator" );
+    sf::Image screen;
 
-    int len = 35;
+    int len = 30;
     std::string strings[len];
     loadStrings( "smieszne.txt", strings, len );
+    
+    bool wasDrawn[len] = { false };
     int whichLine[len];
+    int number;
+    
     for( int i = 0; i < len; i++ )
-        whichLine[i] = std::rand() % len;
+    {
+        do
+        {
+            number = std::rand() % len;
+            whichLine[i] = number;
+        } while( wasDrawn[number] == true );
+        wasDrawn[number] = true;
+    }
 
     while( window.isOpen() )
     {
@@ -92,10 +115,12 @@ int main( int argc, char *argv[] )
             
             window.draw( text );
         }
-
         window.display();
-       
+        screen = window.capture();
     }
     
+    screen.flipVertically();
+    screen.saveToFile( "3es22t.png" ); 
+
     return 0;
 }
