@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 
-bool loadStrings( std::string fileName, std::vector& strings )
+bool loadStrings( std::string fileName, std::vector<std::string>& strings )
 {
     std::fstream file;
     file.open( fileName.c_str() );
@@ -22,28 +22,25 @@ bool loadStrings( std::string fileName, std::vector& strings )
         return true;
     }else
     {
-    	std::cout << "Error loading file." << std:endl;
+    	std::cout << "Error loading file." << std::endl;
     	return false;
     }
 }
 
 int main( int argc, char *argv[] )
 {
-	for( int i = 0; i < argc; i++ )
-	{
-		if( argv[i][0] == '-' )
-		
-	
 	
     srand( time( NULL ) );
     sf::RenderWindow window( sf::VideoMode(500, 500), "Bingo Generator" );
     sf::Image screen;
 
     std::vector<std::string> strings;
-    if( !loadStrings( "smieszne.txt", strings ) )
+    if( !loadStrings( "smieszne2.txt", strings ) )
         return 0;
-    int len = strings.capacity();
     
+    strings.shrink_to_fit();
+    int len = strings.size()-1;
+    std::cout << len << std::endl;
     bool wasDrawn[len] = { false };
     int whichLine[len];
     int number;
@@ -104,16 +101,19 @@ int main( int argc, char *argv[] )
         int z = 0;
         for( int i = 0; i < 29; i++, z++ )
         {
-            if( i != 14 )
+            if( i != 12 )
             {
                 text.setString( strings[ whichLine[i] ].c_str() );
             }else
             {
-                text.setString( "        BONUS" );
+                text.setString( "\nBONUS" );
             }
-            text.setPosition( z*100, y*100 );
 
-            if( z % 5 == 0 && z != 0 )
+            //text.setPosition( z*100, y*100 );
+            
+            text.setPosition( 50+z*100 - text.getGlobalBounds().width / 2, y*100 );
+
+            if( z % 4 == 0 && z != 0 )
             {
                 z = -1;
                 y++;
