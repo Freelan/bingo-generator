@@ -3,40 +3,46 @@
 #include <fstream>
 #include <ctime>
 #include <cstdlib>
+#include <iostream>
+#include <vector>
 
-void loadStrings( std::string fileName, std::string strings[], int len )
+bool loadStrings( std::string fileName, std::vector& strings )
 {
     std::fstream file;
     file.open( fileName.c_str() );
     if( file.good() )
     {
-        for( int i = 0; i < len; i++ )
+        while( !file.eof() )
         {
-            getline( file, strings[i], ';' );
+        	std::string temp;
+            getline( file, temp, ';' );
+            strings.push_back( temp );
         }
-    }
-}
-
-bool wasDrawn( int number, int arr[], int howMany )
-{
-    if( howMany <= 0 )
-        return false;
-    for( int i = 0; i < howMany; i++ )
+        file.close();
+        return true;
+    }else
     {
-        if( arr[i] == number )
-            return true;
+    	std::cout << "Error loading file." << std:endl;
+    	return false;
     }
 }
 
 int main( int argc, char *argv[] )
 {
+	for( int i = 0; i < argc; i++ )
+	{
+		if( argv[i][0] == '-' )
+		
+	
+	
     srand( time( NULL ) );
     sf::RenderWindow window( sf::VideoMode(500, 500), "Bingo Generator" );
     sf::Image screen;
 
-    int len = 30;
-    std::string strings[len];
-    loadStrings( "smieszne.txt", strings, len );
+    std::vector<std::string> strings;
+    if( !loadStrings( "smieszne.txt", strings ) )
+        return 0;
+    int len = strings.capacity();
     
     bool wasDrawn[len] = { false };
     int whichLine[len];
@@ -84,9 +90,9 @@ int main( int argc, char *argv[] )
 
         //draw text
         sf::Font font;
-        if( !font.loadFromFile( "LiberationSans.ttf" ) )
+        if( !font.loadFromFile( "DejaVuSansMono.ttf" ) )
         {
-            //sorry
+            return 0;
         }
 
         sf::Text text;
@@ -103,7 +109,7 @@ int main( int argc, char *argv[] )
                 text.setString( strings[ whichLine[i] ].c_str() );
             }else
             {
-                text.setString( "       BONUS" );
+                text.setString( "        BONUS" );
             }
             text.setPosition( z*100, y*100 );
 
