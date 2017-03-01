@@ -34,7 +34,6 @@ int main( int argc, char *argv[] )
     int arg;
     opterr = 0;
 
-    char* iValue = NULL;
     char* source = NULL;
     int copies = 1;
 
@@ -43,8 +42,10 @@ int main( int argc, char *argv[] )
         switch( arg )
         {
             case 'i':
-                iValue = optarg;
-                copies = (int)iValue[0] - 48;
+                {
+                    std::string temp = optarg;
+                    copies = std::stoi( temp );
+                }
                 break;
             case 's':
                 source = optarg;
