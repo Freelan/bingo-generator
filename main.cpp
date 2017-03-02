@@ -36,8 +36,10 @@ int main( int argc, char *argv[] )
 
     char* source = NULL;
     int copies = 1;
+    sf::Texture bonusImage;
+    sf::Sprite bonusSprite;
 
-    while( ( arg = getopt( argc, argv, "i:s:" ) ) != -1 )
+    while( ( arg = getopt( argc, argv, "i:s:b:" ) ) != -1 )
     {
         switch( arg )
         {
@@ -49,6 +51,12 @@ int main( int argc, char *argv[] )
                 break;
             case 's':
                 source = optarg;
+                break;
+            case 'b':
+                if( !bonusImage.loadFromFile( optarg ) )
+                    return 1;
+                bonusSprite.setTexture( bonusImage );
+                bonusSprite.setPosition( 200, 200 );
                 break;
             case '?':
                 if( optopt == 'i' )
@@ -72,8 +80,6 @@ int main( int argc, char *argv[] )
     
     strings.shrink_to_fit();
     int len = strings.size()-1;
-    //std::cout << len << std::endl;
-    
     
     for( int k = 0; k < copies; k++ )
     {
@@ -143,7 +149,8 @@ int main( int argc, char *argv[] )
                     text.setString( strings[ whichLine[i] ].c_str() );
                 }else
                 {
-                    text.setString( "\nBONUS" );
+                    text.setString( "\n*" );
+                    window.draw( bonusSprite );
                 }
 
                 text.setPosition( 50+z*100 - text.getGlobalBounds().width / 2, y*100 );
