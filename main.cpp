@@ -16,7 +16,7 @@ bool loadStrings( std::string fileName, std::vector<std::string>& strings )
     {
         while( !file.eof() )
         {
-        	std::string temp;
+            std::string temp;
             getline( file, temp, ';' );
             strings.push_back( temp );
         }
