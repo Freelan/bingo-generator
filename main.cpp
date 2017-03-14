@@ -11,7 +11,7 @@
 bool loadStrings( std::string fileName, std::vector<std::string>& strings )
 {
     std::fstream file;
-    file.open( fileName.c_str() );
+    file.open( fileName );
     if( file.good() )
     {
         while( !file.eof() )
@@ -38,7 +38,9 @@ int main( int argc, char *argv[] )
     int copies = 1;
     sf::Texture bonusImage;
     sf::Sprite bonusSprite;
+    sf::Image screen;
 
+    //get args
     while( ( arg = getopt( argc, argv, "i:s:b:" ) ) != -1 )
     {
         switch( arg )
@@ -56,7 +58,7 @@ int main( int argc, char *argv[] )
                 if( !bonusImage.loadFromFile( optarg ) )
                     return 1;
                 bonusSprite.setTexture( bonusImage );
-                bonusSprite.setPosition( 200, 200 );
+                bonusSprite.setPosition( 200, 201 );
                 break;
             case '?':
                 if( optopt == 'i' )
@@ -72,7 +74,6 @@ int main( int argc, char *argv[] )
 
 
     srand( time( NULL ) );
-    sf::Image screen;
 
     std::vector<std::string> strings;
     if( !loadStrings( source, strings ) )
@@ -87,6 +88,7 @@ int main( int argc, char *argv[] )
         int whichLine[len] = { 0 };
         int number;
         
+        //random draw
         for( int i = 0; i < len; i++ )
         {
             do
@@ -97,81 +99,72 @@ int main( int argc, char *argv[] )
             wasDrawn[number] = true;
         }
 
-        sf::RenderWindow window( sf::VideoMode(500, 500), "Bingo Generator" );
-        while( window.isOpen() )
-        {
-            sf::Event event;
-            while( window.pollEvent( event ) )
-            {
-                if( event.type == sf::Event::Closed )
-                    window.close();
-            }
-            window.clear( sf::Color::White );
-            
-            //draw lines
-            sf::VertexArray lines( sf::LineStrip, 2 );
-            lines[0].color = sf::Color::Black;
-            lines[1].color = sf::Color::Black;
-            
-            for( int i = 1; i < 5; i++ )
-            {
-                lines[0].position = sf::Vector2f(i*100, 0);
-                lines[1].position = sf::Vector2f(i*100, 500);
-
-                window.draw( lines );
-            }   
-            for( int i = 1; i < 5; i++ )
-            {
-                lines[0].position = sf::Vector2f(0, i*100);
-                lines[1].position = sf::Vector2f(500, i*100);
-
-                window.draw( lines );
-            }   
-
-            //draw text
-            sf::Font font;
-            if( !font.loadFromFile( "DejaVuSansMono.ttf" ) )
-            {
-                return 0;
-            }
-
-            sf::Text text;
-            text.setFont( font );
-            text.setCharacterSize( 12 );
-            text.setFillColor( sf::Color::Black );
-            
-            int y = 0;
-            int z = 0;
-            for( int i = 0; i < 29; i++, z++ )
-            {
-                if( i != 12 )
-                {
-                    text.setString( strings[ whichLine[i] ].c_str() );
-                }else
-                {
-                    text.setString( "\n*" );
-                    window.draw( bonusSprite );
-                }
-
-                text.setPosition( 50+z*100 - text.getGlobalBounds().width / 2, y*100 );
-
-                if( z % 4 == 0 && z != 0 )
-                {
-                    z = -1;
-                    y++;
-                }
-                
-                window.draw( text );
-            }
-            window.display();
-            screen = window.capture();
-        }
+        sf::RenderTexture window;
+        if( !window.create( 500, 500 ) )
+            return 1;
         
+        window.clear( sf::Color::White );
+
+        //draw lines
+        sf::VertexArray lines( sf::LineStrip, 2 );
+        lines[0].color = sf::Color::Black;
+        lines[1].color = sf::Color::Black;
+            
+        for( int i = 1; i < 5; i++ ) //x
+        {
+            lines[0].position = sf::Vector2f(i*100, 0);
+            lines[1].position = sf::Vector2f(i*100, 500);
+
+            window.draw( lines );
+        }   
+        for( int i = 1; i < 5; i++ ) //y
+        {
+            lines[0].position = sf::Vector2f(0, i*100);
+            lines[1].position = sf::Vector2f(500, i*100);
+
+            window.draw( lines );
+        }   
+
+        //draw text
+        sf::Font font;
+        if( !font.loadFromFile( "DejaVuSansMono.ttf" ) )
+            return 1;
+
+        sf::Text text;
+        text.setFont( font );
+        text.setCharacterSize( 12 );
+        text.setFillColor( sf::Color::Black );
+        
+        int y = 0;
+        int z = 0;
+        for( int i = 0; i < 25; i++, z++ )
+        {
+            if( i != 12 )
+            {
+                text.setString( strings[ whichLine[i] ] );
+            }else
+            {
+                text.setString( "\n*" );
+                window.draw( bonusSprite );
+            }
+
+            text.setPosition( 50+z*100 - text.getGlobalBounds().width / 2, y*100 );
+
+            if( z % 4 == 0 && z != 0 )
+            {
+                z = -1;
+                y++;
+            }
+            
+            window.draw( text );
+        }
+
+        //save
+        screen = window.getTexture().copyToImage();
         screen.flipVertically();
         std::string outputName = "out";
         outputName = outputName + std::to_string(k+1) + ".png";
-        screen.saveToFile( outputName.c_str() ); 
-    
+        screen.saveToFile( outputName ); 
     }
 
     return 0;
