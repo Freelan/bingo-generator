@@ -176,7 +176,7 @@ int main( int argc, char *argv[] )
         std::string outputName = "out";
         outputName = outputName + std::to_string(k+1) + ".png";
         screen.saveToFile( outputName ); 
-    }
+    } //
     std::cout << "Done!" << std::endl;
     return 0;
 }

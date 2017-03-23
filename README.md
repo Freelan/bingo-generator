@@ -10,9 +10,10 @@ Simple bingo generator.
 	
 <b>Usage</b>
 <br>
--s "[phrases source]"
+-s [phrases source]
+-f [font source]
+-b [bonus image source"
 -i [quantity]
--b "[bonus image source"]
 
 <b>Build</b>
 <br>
