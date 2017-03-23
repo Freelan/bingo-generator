@@ -34,40 +34,58 @@ int main( int argc, char *argv[] )
     int arg;
     opterr = 0;
 
-    char* source = NULL;
+    char* source;
     int copies = 1;
+    sf::Font font;
+    sf::Text text;
     sf::Texture bonusImage;
     sf::Sprite bonusSprite;
     sf::Image screen;
 
     //get args
-    while( ( arg = getopt( argc, argv, "i:s:b:" ) ) != -1 )
+    while( ( arg = getopt( argc, argv, "i:s:b:f:" ) ) != -1 )
     {
         switch( arg )
         {
             case 'i':
-                {
-                    std::string temp = optarg;
-                    copies = std::stoi( temp );
-                }
+            {
+                std::string temp = optarg;
+                copies = std::stoi( temp );
+            
                 break;
+            }
             case 's':
                 source = optarg;
+
                 break;
             case 'b':
                 if( !bonusImage.loadFromFile( optarg ) )
                     return 1;
                 bonusSprite.setTexture( bonusImage );
                 bonusSprite.setPosition( 200, 201 );
+
                 break;
+            case 'f':
+            {
+                std::string fontString = optarg;
+                if( !font.loadFromFile( fontString ) )
+                    return 1;
+                
+                text.setFont( font );
+                text.setCharacterSize( 13 );
+                text.setFillColor( sf::Color::Black );
+
+                break;
+            }
             case '?':
-                if( optopt == 'i' )
+                if( optopt == 'i' || optopt == 's' || optopt == 'b' || optopt == 'f' )
                     std::cout << "Option requires an argument." << std::endl;
                 else if( isprint( optopt ) )
-                    std::cout << "Unkown option." << std::endl;
+                    std::cout << "Unkown option: " << optopt << std::endl;
                 else
                     std::cout << "Unkown option character" << std::endl;
                 return 1;
+
                 break;
         }
     }
@@ -82,7 +100,7 @@ int main( int argc, char *argv[] )
     strings.shrink_to_fit();
     int len = strings.size()-1;
     
-    for( int k = 0; k < copies; k++ )
+    for( int k = 0; k < copies; k++ ) //copy loop
     {
         bool wasDrawn[len] = { false };
         int whichLine[len] = { 0 };
@@ -112,34 +130,27 @@ int main( int argc, char *argv[] )
             
         for( int i = 1; i < 5; i++ ) //x
         {
-            lines[0].position = sf::Vector2f(i*100, 0);
-            lines[1].position = sf::Vector2f(i*100, 500);
+            lines[0].position = sf::Vector2f( i*100, 0 );
+            lines[1].position = sf::Vector2f( i*100, 500 );
 
             window.draw( lines );
         }   
         for( int i = 1; i < 5; i++ ) //y
         {
-            lines[0].position = sf::Vector2f(0, i*100);
-            lines[1].position = sf::Vector2f(500, i*100);
+            lines[0].position = sf::Vector2f( 0, i*100 );
+            lines[1].position = sf::Vector2f( 500, i*100 );
 
             window.draw( lines );
         }   
 
         //draw text
-        sf::Font font;
-        if( !font.loadFromFile( "DejaVuSansMono.ttf" ) )
-            return 1;
-
-        sf::Text text;
-        text.setFont( font );
-        text.setCharacterSize( 12 );
-        text.setFillColor( sf::Color::Black );
-        
         int y = 0;
         int z = 0;
-        for( int i = 0; i < 25; i++, z++ )
+        int bonusTile = 12;
+        int tileCount = 25;
+        for( int i = 0; i < tileCount; i++, z++ )
         {
-            if( i != 12 )
+            if( i != bonusTile )
             {
                 text.setString( strings[ whichLine[i] ] );
             }else
@@ -148,7 +159,7 @@ int main( int argc, char *argv[] )
                 window.draw( bonusSprite );
             }
 
-            text.setPosition( 50+z*100 - text.getGlobalBounds().width / 2, y*100 );
+            text.setPosition( 50+z*100 - text.getGlobalBounds().width / 2, y*100 ); //center text
 
             if( z % 4 == 0 && z != 0 )
             {
@@ -166,6 +177,6 @@ int main( int argc, char *argv[] )
         outputName = outputName + std::to_string(k+1) + ".png";
         screen.saveToFile( outputName ); 
     }
-
+    std::cout << "Done!" << std::endl;
     return 0;
 }
