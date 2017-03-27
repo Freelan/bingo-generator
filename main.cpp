@@ -2,6 +2,7 @@
 #include <SFML/System.hpp>
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <ctime>
 #include <cmath>
 #include <cstdlib>
@@ -151,26 +152,32 @@ int main( int argc, char *argv[] )
         int tileCount = 25;
         for( int i = 0; i < tileCount; i++, z++ )
         {
+            int a;
+            int b = y*100;
+
             if( i != bonusTile )
             {
-                text.setString( strings[ whichLine[i] ] );
+                std::string lines[6];
+                std::istringstream linesStream( strings[ whichLine[i] ].c_str() );
+                for( int j = 0; std::getline( linesStream, lines[j] ); j++ )
+                {
+                    text.setString( lines[j] );
+                    a = round( 50+z*100 - text.getGlobalBounds().width / 2 ); //center text
+                    text.setPosition( a, b+14*j );
+                    window.draw( text );
+                }
+
             }else
             {
                 text.setString( "\n*" );
                 window.draw( bonusSprite );
             }
             
-            int a = round( 50+z*100 - text.getGlobalBounds().width / 2 ); //center text
-            int b = y*100;
-            text.setPosition( a, b ); 
-
             if( z % 4 == 0 && z != 0 )
             {
                 z = -1;
                 y++;
             }
-            
-            window.draw( text );
         }
 
         //save
