@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <ctime>
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <vector>
@@ -158,8 +159,10 @@ int main( int argc, char *argv[] )
                 text.setString( "\n*" );
                 window.draw( bonusSprite );
             }
-
-            text.setPosition( 50+z*100 - text.getGlobalBounds().width / 2, y*100 ); //center text
+            
+            int a = round( 50+z*100 - text.getGlobalBounds().width / 2 ); //center text
+            int b = y*100;
+            text.setPosition( a, b ); 
 
             if( z % 4 == 0 && z != 0 )
             {
