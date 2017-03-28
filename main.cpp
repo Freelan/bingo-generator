@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <locale>
 #include <ctime>
 #include <cmath>
 #include <cstdlib>
@@ -10,25 +11,18 @@
 #include <vector>
 #include <unistd.h>
 
-bool loadStrings( std::string fileName, std::vector<std::string>& strings )
+bool loadStrings( std::string fileName, std::vector<std::wstring>& strings )
 {
-    std::fstream file;
-    file.open( fileName );
-    if( file.good() )
-    {
-        while( !file.eof() )
-        {
-            std::string temp;
-            getline( file, temp, ';' );
-            strings.push_back( temp );
-        }
-        file.close();
-        return true;
-    }else
-    {
-    	std::cout << "Error loading file." << std::endl;
-    	return false;
-    }
+    std::wfstream file( fileName.c_str() );
+    file.imbue( std::locale( "" ) );
+    std::wstringstream wss;
+    wss << file.rdbuf();
+
+    std::wstring temp;
+    while( std::getline( wss, temp, L';' ) )
+        strings.push_back( temp );
+
+    return true;
 }
 
 int main( int argc, char *argv[] )
@@ -95,7 +89,7 @@ int main( int argc, char *argv[] )
 
     srand( time( NULL ) );
 
-    std::vector<std::string> strings;
+    std::vector<std::wstring> strings;
     if( !loadStrings( source, strings ) )
         return 0;
     
@@ -157,10 +151,11 @@ int main( int argc, char *argv[] )
 
             if( i != bonusTile )
             {
-                std::string lines[6];
-                std::istringstream linesStream( strings[ whichLine[i] ].c_str() );
-                for( int j = 0; std::getline( linesStream, lines[j] ); j++ )
+                std::wstring lines[6];
+                std::wstringstream linesStream( strings[ whichLine[i] ] );
+                for( int j = 0; j < 6; j++ )
                 {
+                    std::getline( linesStream, lines[j] );
                     text.setString( lines[j] );
                     a = round( 50+z*100 - text.getGlobalBounds().width / 2 ); //center text
                     text.setPosition( a, b+14*j );
@@ -169,7 +164,9 @@ int main( int argc, char *argv[] )
 
             }else
             {
-                text.setString( "\n*" );
+                text.setString( "BONUS" );
+                text.setPosition( 50+z*100 - text.getGlobalBounds().width / 2, 214 );
+                window.draw( text );
                 window.draw( bonusSprite );
             }
             
