@@ -18,7 +18,7 @@ Simple bingo generator.
 <b>Build</b>
 <br>
 <code>
-	git clone https://github.com/Freelan/bingo-generator.git && cd bingo-generator 
+	git clone https://github.com/hjaremko/bingo-generator.git && cd bingo-generator 
 </code>
 <br>
 <code>
