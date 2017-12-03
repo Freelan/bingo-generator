@@ -12,7 +12,7 @@ Simple bingo generator.
 <br>
 -s [phrases source]
 -f [font source]
--b [bonus image source"
+-b [bonus image source]
 -i [quantity]
 
 <b>Build</b>
